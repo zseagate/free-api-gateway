@@ -76,7 +76,7 @@ docker compose logs -f new-api   # 确认监听后 Ctrl+C
 
 | 渠道 | 类型 | Base URL | Key | 模型（Models 字段，逗号分隔） |
 |---|---|---|---|---|
-| Numes | **自定义/Custom**（OpenAI 兼容） | `https://api.numes.ai/api/v1` | `NUMES_API_KEY` | `deepseek/deepseek-v4.1-flash:free, moonshotai/kimi-k3.1-pro:free, nvidia/nemotron-3-ultra-550b-a55b:free, dealignai/glm-5.3-flash-uncensored-fp8:free` |
+| Numes | **自定义/Custom**（OpenAI 兼容） | `https://api.numes.ai/api/v1` | `NUMES_API_KEY` | `deepseek/deepseek-v4.1-flash:free, moonshotai/kimi-k3.1-pro:free, nvidia/nemotron-3-ultra-550b-a55b:free` |
 | OpenRouter | **OpenRouter**（内置预设） | `https://openrouter.ai/api/v1`（预设自动） | `OPENROUTER_API_KEY` | `openrouter/auto, meta-llama/llama-3.3-70b-instruct:free, google/gemini-2.0-flash-exp:free, nvidia/nemotron-3-ultra:free, qwen/qwen-2.5-72b-instruct:free` |
 | Groq | **OpenAI**（内置类型，type=1） | `https://api.groq.com/openai` | `GROQ_API_KEY` | `qwen/qwen3.8-27b, openai/gpt-oss-120b, openai/gpt-oss-20b, allam-2-7b, openai/gpt-oss-safeguard-20b` |
 
