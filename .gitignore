@@ -1,0 +1,17 @@
+# 真实密钥环境文件 —— 绝不提交（仓库只含 .env.example 占位符）
+.env
+
+# new-api 本地数据（SQLite 数据库等）
+data/
+
+# 运行时二进制与日志（本地部署产物）
+new-api
+new-api.log
+new-api.pid
+
+# 系统杂项
+*.log
+.DS_Store
+Thumbs.db
+one-api.db*
+*.db

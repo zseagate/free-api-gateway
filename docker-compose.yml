@@ -1,0 +1,15 @@
+# New API (QuantumNous/new-api) 单实例本地部署 —— 聚合 Numes / OpenRouter / Groq 免费档
+# 用法: docker compose up -d   (数据持久化在 ./data，默认仅绑定 127.0.0.1)
+# 控制台: http://127.0.0.1:3000  (首次打开走设置向导创建管理员)
+services:
+  new-api:
+    image: calciumion/new-api:latest   # 官方镜像（README quick-start 使用）
+    container_name: new-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"          # 仅本机；需要局域网再改 0.0.0.0 并自行加固
+    environment:
+      - TZ=Asia/Shanghai
+      # - SESSION_SECRET=<openssl rand -hex 32>   # 多实例/生产建议设置并固定
+    volumes:
+      - ./data:/data                    # SQLite 数据库 + 数据
