@@ -70,6 +70,24 @@ docker compose logs -f new-api   # 确认监听后 Ctrl+C
 
 ---
 
+
+
+### 可选：Groq 提示词截断代理（控制 Groq 免费档 ITPM）
+
+Groq 免费档输入 tokens/分钟仅 7000，OpenCode 的系统提示词约 7K tokens 会超限。
+仓库提供 `groq-proxy.py`，在网关前加一层，仅对 Groq 模型截断 prompt：
+
+```bash
+# 启动代理（监听 3001，转发到 new-api 3000）
+tmux new -d -s groq-proxy "cd /home/gw/project/new-api-free-gateway && python3 groq-proxy.py"
+# OpenCode 的 baseURL 改为 http://127.0.0.1:3001/v1
+```
+
+> 代理只能缓解单次请求体积；Groq 免费档是滚动 60s 窗口，持续高频仍会 429。
+> 建议 Groq 仅用于短对话/偶发查询，持续任务用 Numes/OpenRouter。
+
+---
+
 ## 5. 添加三个渠道（控制台 →「渠道」→「添加渠道」）
 
 渠道类型编号已按源码 `constant/channel.go` 核对：**Custom=8**、**OpenRouter=20**。
@@ -77,7 +95,7 @@ docker compose logs -f new-api   # 确认监听后 Ctrl+C
 | 渠道 | 类型 | Base URL | Key | 模型（Models 字段，逗号分隔） |
 |---|---|---|---|---|
 | Numes | **自定义/Custom**（OpenAI 兼容） | `https://api.numes.ai/api/v1` | `NUMES_API_KEY` | `deepseek/deepseek-v4.1-flash:free, moonshotai/kimi-k3.1-pro:free, nvidia/nemotron-3-ultra-550b-a55b:free` |
-| OpenRouter | **OpenRouter**（内置预设） | `https://openrouter.ai/api/v1`（预设自动） | `OPENROUTER_API_KEY` | `openrouter/auto, meta-llama/llama-3.3-70b-instruct:free, google/gemini-2.0-flash-exp:free, nvidia/nemotron-3-ultra:free, qwen/qwen-2.5-72b-instruct:free` |
+| OpenRouter | **OpenRouter**（内置预设） | `https://openrouter.ai/api/v1`（预设自动） | `OPENROUTER_API_KEY` | `openrouter/auto, baidu/ernie-5.5-flash-preview:free, nvidia/nemotron-3.5-super-vl:free, nvidia/nemotron-3.5-lightning:free, nvidia/nemotron-3-ultra-550b-a55b:free, nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free, recursive/flint-v1.0:free` |
 | Groq | **OpenAI**（内置类型，type=1） | `https://api.groq.com/openai` | `GROQ_API_KEY` | `qwen/qwen3.8-27b, openai/gpt-oss-120b, openai/gpt-oss-20b, allam-2-7b, openai/gpt-oss-safeguard-20b` |
 
 添加规则：
@@ -92,7 +110,7 @@ docker compose logs -f new-api   # 确认监听后 Ctrl+C
 
 ```mermaid
 flowchart TD
-    A["渠道: Numes<br/>类型=自定义(8)<br/>BaseURL=api.numes.ai/api/v1<br/>Key=NUMES_API_KEY<br/>Models=9 个 :free"] 
+    A["渠道: Numes<br/>类型=自定义(8)<br/>BaseURL=api.numes.ai/api/v1<br/>Key=NUMES_API_KEY<br/>Models=3 个 :free"] 
     B["渠道: OpenRouter<br/>类型=OpenRouter(20)<br/>BaseURL=预设 openrouter.ai<br/>Key=OPENROUTER_API_KEY<br/>Models=openrouter/auto 等"]
     C["渠道: Groq<br/>类型=OpenAI(1)<br/>BaseURL=api.groq.com/openai<br/>Key=GROQ_API_KEY<br/>Models=5 个"]
     A --> T["每个渠道点『测试』确认可用"]
@@ -196,6 +214,8 @@ flowchart TD
 ```bash
 # 从 https://github.com/QuantumNous/new-api/releases 下载对应平台二进制
 ./new-api --port 3000
+# 可选：启动 Groq 提示词截断代理（监听 3001）
+python3 groq-proxy.py
 # 同样访问 http://127.0.0.1:3000，数据默认在 ./data
 ```
 
