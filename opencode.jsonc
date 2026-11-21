@@ -6,7 +6,7 @@
       "name": "Free Gateway (new-api)",
       "package": "@opencode/ai/providers/openai-compatible",
       "settings": {
-        "baseURL": "http://127.0.0.1:3000/v1",
+        "baseURL": "http://127.0.0.1:3001/v1",
         "apiKey": "{env:NEW_API_TOKEN}"
       },
       "models": {
