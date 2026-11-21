@@ -221,6 +221,23 @@ python3 groq-proxy.py
 
 ---
 
+## 11. 开机自启（systemd 用户服务）
+
+仓库提供 `systemd/new-api.service` 与 `systemd/groq-proxy.service` 示例：
+
+```bash
+mkdir -p ~/.config/systemd/user
+cp systemd/new-api.service systemd/groq-proxy.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now new-api.service groq-proxy.service
+# 验证
+systemctl --user status new-api.service groq-proxy.service
+```
+
+> 已启用 `loginctl enable-linger`（用户未登录也运行）；如未启用：`sudo loginctl enable-linger $USER`。
+
+---
+
 ## 附录：仓库文件清单
 
 | 文件 | 作用 |
@@ -230,5 +247,6 @@ python3 groq-proxy.py
 | `opencode.jsonc` | OpenCode 对接配置（V2，14 个模型） |
 | `groq-proxy.py` | Groq 提示词截断代理（控制 ITPM） |
 | `verify.sh` | 网关/渠道连通性验证 |
+| `systemd/*.service` | 开机自启 unit 文件 |
 | `README.md` | 仓库首页 |
 | `SETUP.md` | 本文档 |

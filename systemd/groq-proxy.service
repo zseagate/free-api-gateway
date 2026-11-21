@@ -1,0 +1,18 @@
+[Unit]
+Description=Groq prompt truncation proxy (free-tier ITPM mitigation)
+After=new-api.service
+Requires=new-api.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/gw/project/new-api-free-gateway
+Environment=UPSTREAM=http://127.0.0.1:3000
+Environment=PORT=3001
+ExecStart=/usr/bin/python3 /home/gw/project/new-api-free-gateway/groq-proxy.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/gw/project/new-api-free-gateway/groq-proxy.log
+StandardError=append:/home/gw/project/new-api-free-gateway/groq-proxy.log
+
+[Install]
+WantedBy=default.target

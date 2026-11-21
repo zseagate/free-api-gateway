@@ -1,0 +1,16 @@
+[Unit]
+Description=new-api free gateway (Numes/OpenRouter/Groq)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/gw/project/new-api-free-gateway
+ExecStart=/home/gw/project/new-api-free-gateway/new-api --port 3000
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/gw/project/new-api-free-gateway/new-api.log
+StandardError=append:/home/gw/project/new-api-free-gateway/new-api.log
+
+[Install]
+WantedBy=default.target
