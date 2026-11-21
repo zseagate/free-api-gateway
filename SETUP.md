@@ -227,7 +227,8 @@ python3 groq-proxy.py
 |---|---|
 | `docker-compose.yml` | new-api 单实例（SQLite，仅 `127.0.0.1:3000`） |
 | `.env.example` | 上游 Key 模板（真实值放 gitignored `.env`） |
-| `opencode.jsonc` | OpenCode 对接配置（V2，17 个模型） |
+| `opencode.jsonc` | OpenCode 对接配置（V2，14 个模型） |
+| `groq-proxy.py` | Groq 提示词截断代理（控制 ITPM） |
 | `verify.sh` | 网关/渠道连通性验证 |
 | `README.md` | 仓库首页 |
 | `SETUP.md` | 本文档 |
