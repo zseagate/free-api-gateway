@@ -1,0 +1,12 @@
+[Unit]
+Description=Run free-model sync periodically
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=6h
+RandomizedDelaySec=120
+Persistent=true
+Unit=sync-models.service
+
+[Install]
+WantedBy=timers.target

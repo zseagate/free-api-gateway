@@ -257,6 +257,227 @@
             "context": 131072,
             "output": 800
           }
+        },
+        "dealignai/deepseek-v4.1-flash-uncensored-fp8:free": {
+          "modelID": "dealignai/deepseek-v4.1-flash-uncensored-fp8:free",
+          "name": "Deepseek v4.1 Flash Uncensored Fp8 (Numes)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "dealignai/glm-5.3-flash-uncensored-fp8:free": {
+          "modelID": "dealignai/glm-5.3-flash-uncensored-fp8:free",
+          "name": "Glm 5.3 Flash Uncensored Fp8 (Numes)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "dealignai/glm-5.3-uncensored-fp8:free": {
+          "modelID": "dealignai/glm-5.3-uncensored-fp8:free",
+          "name": "Glm 5.3 Uncensored Fp8 (Numes)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "dots-studio/dots-3-note-preview:free": {
+          "modelID": "dots-studio/dots-3-note-preview:free",
+          "name": "Dots 3 Note Preview (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "google/gemma-4-26b-a4b-it:free": {
+          "modelID": "google/gemma-4-26b-a4b-it:free",
+          "name": "Gemma 4 26b A4b It (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "google/gemma-4-31b-it:free": {
+          "modelID": "google/gemma-4-31b-it:free",
+          "name": "Gemma 4 31b It (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "inclusionai/ling-3.2-flash:free": {
+          "modelID": "inclusionai/ling-3.2-flash:free",
+          "name": "Ling 3.2 Flash (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "liquid/lfm-3-1.7b:free": {
+          "modelID": "liquid/lfm-3-1.7b:free",
+          "name": "Lfm 3 1.7b (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "openrouter/free": {
+          "modelID": "openrouter/free",
+          "name": "Free (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "particle-ai/particle-1:free": {
+          "modelID": "particle-ai/particle-1:free",
+          "name": "Particle 1 (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "z-ai/glm-5.3-flash:free": {
+          "modelID": "z-ai/glm-5.3-flash:free",
+          "name": "Glm 5.3 Flash (Numes)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "z-ai/glm-5.3:free": {
+          "modelID": "z-ai/glm-5.3:free",
+          "name": "Glm 5.3 (Numes)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "uniboshi/kimi-k3-abliterated-v1:free": {
+          "modelID": "uniboshi/kimi-k3-abliterated-v1:free",
+          "name": "Kimi K3 Abliterated v1 (Numes)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
         }
       }
     }

@@ -1,0 +1,11 @@
+[Unit]
+Description=Sync free upstream models into new-api + OpenCode
+After=new-api.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/gw/project/new-api-free-gateway
+EnvironmentFile=-/home/gw/project/new-api-free-gateway/.env
+ExecStart=/usr/bin/python3 /home/gw/project/new-api-free-gateway/sync-models.py
+TimeoutStartSec=900

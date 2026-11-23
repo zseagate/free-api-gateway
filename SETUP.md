@@ -238,15 +238,48 @@ systemctl --user status new-api.service groq-proxy.service
 
 ---
 
+## 12. 定期同步上游免费模型
+
+`sync-models.py` 会每 6 小时自动执行：
+
+1. 拉取 Numes / OpenRouter / Groq 的 `/v1/models`
+2. 筛出免费（`:free`）与可聊天模型
+3. 对尚未接入 OpenCode 的模型直接打一次最小请求做连通性测试
+4. 写入 `channels.models`、重建 `abilities` 路由表、更新令牌 `model_limits`
+5. 同步 `opencode.jsonc` 与 `~/.config/opencode/opencode.jsonc`
+6. 重启 `new-api` / `groq-proxy`，并做一次端到端抽查
+
+```bash
+./sync-models.py --dry-run   # 只看计划，不改任何东西
+./sync-models.py             # 手动执行一次
+```
+
+定时器（已包含在仓库 `systemd/`）：
+
+```bash
+cp systemd/sync-models.service systemd/sync-models.timer ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now sync-models.timer
+systemctl --user list-timers sync-models.timer
+```
+
+> 每次运行结果写入 `logs/sync-<时间>.log`，最新一份为 `logs/sync-latest.log`（日志已 gitignore）。
+> 修改数据库前会自动备份为 `one-api.db.sync-bak`。
+> 每次最多测试 12 个新模型，避免打爆 OpenRouter 免费额度（未充值时日限额 50 次）。
+
+---
+
 ## 附录：仓库文件清单
 
 | 文件 | 作用 |
 |---|---|
 | `docker-compose.yml` | new-api 单实例（SQLite，仅 `127.0.0.1:3000`） |
 | `.env.example` | 上游 Key 模板（真实值放 gitignored `.env`） |
-| `opencode.jsonc` | OpenCode 对接配置（V2，14 个模型） |
+| `opencode.jsonc` | OpenCode 对接配置（V2，随同步自动增删） |
 | `groq-proxy.py` | Groq 提示词截断代理（控制 ITPM） |
 | `verify.sh` | 网关/渠道连通性验证 |
-| `systemd/*.service` | 开机自启 unit 文件 |
+| `sync-models.py` | 定期拉取免费模型、测连通、写回配置 |
+| `systemd/*.service` | 开机自启与定时同步 unit 文件 |
+| `systemd/*.timer` | 定期同步定时器（6 小时） |
 | `README.md` | 仓库首页 |
 | `SETUP.md` | 本文档 |
