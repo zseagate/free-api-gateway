@@ -5,12 +5,16 @@ Only truncates the prompt for Groq-backed models (ITPM ~7000 free tier),
 so OpenCode's long system prompt no longer exceeds Groq's input limit.
 Other models pass through unchanged.
 """
-import http.server, json, urllib.request, urllib.error, os
+import http.server, json, urllib.request, urllib.error, os, sys
 
 UPSTREAM = os.environ.get("UPSTREAM", "http://127.0.0.1:3000")
 LISTEN = int(os.environ.get("PORT", "3001"))
 GROQ_MODELS = {"qwen/qwen3.8-27b", "openai/gpt-oss-20b", "openai/gpt-oss-120b",
                "openai/gpt-oss-safeguard-20b", "allam-2-7b"}
+# 上游拒绝工具调用的模型：OpenCode 仍会携带 tools（capabilities.tools 只影响 UI/选中，
+# 不裁剪请求），故在此剥离 tools/tool_choice，避免上游 400。
+# 这些模型同样不接受 assistant 历史里的 reasoning_content，一并剥离。
+NO_TOOLS = {"allam-2-7b"}
 INPUT_BUDGET_TOKENS = 1200  # conservative; leaves room for tool defs + retries
 
 
@@ -111,6 +115,26 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if len(data["messages"]) != orig:
                 sys.stderr.write(f"[groq-proxy] truncated messages {orig} -> {len(data['messages'])} for {data['model']}\n")
             body = json.dumps(data).encode()
+        if isinstance(data, dict) and data.get("model") in NO_TOOLS:
+            removed = []
+            if "tools" in data:
+                removed.append("tools")
+                del data["tools"]
+            if "tool_choice" in data:
+                removed.append("tool_choice")
+                del data["tool_choice"]
+            # 剥离 assistant 历史里的推理字段，避免上游 400
+            msgs = data.get("messages")
+            if isinstance(msgs, list):
+                for mm in msgs:
+                    if isinstance(mm, dict) and mm.get("role") == "assistant":
+                        for k in ("reasoning_content", "reasoning"):
+                            if k in mm:
+                                removed.append(f"{k}@msg")
+                                del mm[k]
+            if removed:
+                sys.stderr.write(f"[groq-proxy] stripped {','.join(sorted(set(removed)))} for {data['model']}\n")
+                body = json.dumps(data).encode()
         headers["Content-Length"] = str(len(body))
         url = UPSTREAM + path
         req = urllib.request.Request(url, data=body, headers=headers, method="POST")

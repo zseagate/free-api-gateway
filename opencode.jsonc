@@ -30,26 +30,6 @@
             "output": 4096
           }
         },
-        "moonshotai/kimi-k3.1-pro:free": {
-          "modelID": "moonshotai/kimi-k3.1-pro:free",
-          "name": "Kimi K3.1 Pro (Numes free)",
-          "settings": {
-            "reasoningEffort": "high"
-          },
-          "capabilities": {
-            "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 131072,
-            "output": 4096
-          }
-        },
         "nvidia/nemotron-3-ultra-550b-a55b:free": {
           "modelID": "nvidia/nemotron-3-ultra-550b-a55b:free",
           "name": "Nemotron 3 Ultra (Numes free)",
@@ -228,24 +208,10 @@
           "modelID": "allam-2-7b",
           "name": "ALLaM 2 7B (Groq free)",
           "capabilities": {
-            "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 131072,
-            "output": 800
-          }
-        },
-        "openai/gpt-oss-safeguard-20b": {
-          "modelID": "openai/gpt-oss-safeguard-20b",
-          "name": "GPT-OSS Safeguard 20B (Groq free)",
-          "capabilities": {
-            "tools": true,
+            "tools": false,
+            "reasoning": {
+              "supported": false
+            },
             "input": [
               "text"
             ],
@@ -343,60 +309,9 @@
             "output": 512
           }
         },
-        "google/gemma-4-31b-it:free": {
-          "modelID": "google/gemma-4-31b-it:free",
-          "name": "Gemma 4 31b It (OpenRouter)",
-          "capabilities": {
-            "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 131072,
-            "output": 512
-          }
-        },
-        "inclusionai/ling-3.2-flash:free": {
-          "modelID": "inclusionai/ling-3.2-flash:free",
-          "name": "Ling 3.2 Flash (OpenRouter)",
-          "capabilities": {
-            "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 131072,
-            "output": 512
-          }
-        },
         "liquid/lfm-3-1.7b:free": {
           "modelID": "liquid/lfm-3-1.7b:free",
           "name": "Lfm 3 1.7b (OpenRouter)",
-          "capabilities": {
-            "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "limit": {
-            "context": 131072,
-            "output": 512
-          }
-        },
-        "openrouter/free": {
-          "modelID": "openrouter/free",
-          "name": "Free (OpenRouter)",
           "capabilities": {
             "tools": true,
             "input": [
@@ -445,9 +360,9 @@
             "output": 4096
           }
         },
-        "z-ai/glm-5.3:free": {
-          "modelID": "z-ai/glm-5.3:free",
-          "name": "Glm 5.3 (Numes)",
+        "uniboshi/kimi-k3-abliterated-v1:free": {
+          "modelID": "uniboshi/kimi-k3-abliterated-v1:free",
+          "name": "Kimi K3 Abliterated v1 (Numes)",
           "capabilities": {
             "tools": true,
             "input": [
@@ -462,9 +377,9 @@
             "output": 4096
           }
         },
-        "uniboshi/kimi-k3-abliterated-v1:free": {
-          "modelID": "uniboshi/kimi-k3-abliterated-v1:free",
-          "name": "Kimi K3 Abliterated v1 (Numes)",
+        "z-ai/glm-5.3:free": {
+          "modelID": "z-ai/glm-5.3:free",
+          "name": "Glm 5.3 (Numes)",
           "capabilities": {
             "tools": true,
             "input": [

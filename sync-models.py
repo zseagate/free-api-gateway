@@ -67,6 +67,13 @@ UPSTREAMS = {
 # 不带上游 free 标签、但值得保留的路由模型
 KEEP_ROUTES = {"openrouter/auto", "openrouter/free"}
 
+# 上游实际能力有缺陷的模型：在这里覆盖 capabilities（其余默认 tools=True）
+# 例：Groq 的 allam-2-7b 收到 tools 会直接 400 "`tool calling` is not supported with this model"，
+# 且拒绝回传 reasoning_content 字段，需同时关闭 reasoning。
+CAPABILITY_OVERRIDES = {
+    "allam-2-7b": {"tools": False, "reasoning": {"supported": False}},
+}
+
 
 def load_env():
     env = {}
@@ -258,10 +265,12 @@ def nice_name(mid):
 
 
 def build_entry(mid, channel_name, up):
+    caps = {"tools": True, "input": ["text"], "output": ["text"]}
+    caps.update(CAPABILITY_OVERRIDES.get(mid, {}))
     return {
         "modelID": mid,
         "name": f"{nice_name(mid)} ({channel_name})",
-        "capabilities": {"tools": True, "input": ["text"], "output": ["text"]},
+        "capabilities": caps,
         "limit": {"context": up["context_limit"], "output": up["output_limit"]},
     }
 
@@ -277,6 +286,17 @@ def sync_config(gateway_models, channel_of, lines, dry_run):
             log(f"  - 移除模型 {mid}（网关已不可用）", lines)
             del models[mid]
             changed = True
+
+    # 校正已有模型的能力声明（覆盖表里的项以 CAPABILITY_OVERRIDES 为准）
+    for mid, over in CAPABILITY_OVERRIDES.items():
+        if mid not in models:
+            continue
+        caps = models[mid].setdefault("capabilities", {})
+        for k, v in over.items():
+            if caps.get(k) != v:
+                caps[k] = v
+                log(f"  ~ 校正 {mid} capabilities.{k} = {json.dumps(v)}", lines)
+                changed = True
 
     # 新增模型
     for mid in gateway_models:

@@ -198,6 +198,22 @@ flowchart TD
 | 首 token >30s | 免费档冷启动 | 属正常；耐心等待 |
 | `reasoning.effort not supported` | Numes 模型默认 effort 不被支持 | 确认模型 `settings.reasoningEffort="high"` |
 | 上游 5xx | 上游临时故障 | 用 `verify.sh --watch` 类轮询确认恢复 |
+| `` `tool calling` is not supported with this model `` | 模型（如 Groq `allam-2-7b`）不支持工具调用，但 OpenCode 仍带 `tools` | 见下方「无工具模型」说明 |
+| `'messages.N' ... property 'reasoning_content' is unsupported` | 历史里的 `reasoning_content` 被回传给不认该字段的模型 | 见下方「无工具模型」说明 |
+
+### 无工具 / 非推理模型（如 Groq `allam-2-7b`）
+
+OpenCode 的 `capabilities.tools` / `capabilities.reasoning` 只影响选择器与界面，**不会裁剪实际请求体**；
+因此对上游拒绝 `tools` 或 `reasoning_content` 的模型，需在 `groq-proxy.py` 的 `NO_TOOLS` 集合中登记：
+
+```python
+NO_TOOLS = {"allam-2-7b"}  # 请求体剥离 tools/tool_choice 与 assistant 历史里的 reasoning_content
+```
+
+同时在 `opencode.jsonc` 里把该模型 `capabilities.tools` 置 `false`（并 `reasoning.supported: false`），
+在 `sync-models.py` 的 `CAPABILITY_OVERRIDES` 里登记，避免 `sync-models` 把它改回 `true`。
+改动后 `systemctl --user restart groq-proxy.service`。
+
 
 ### 安全与合规
 
