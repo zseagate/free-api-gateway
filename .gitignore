@@ -15,5 +15,8 @@ new-api.pid
 Thumbs.db
 one-api.db*
 *.db
+
+# 本地敏感/临时产物 —— 绝不提交
+.admin-cred.txt
 __pycache__/
 *.pyc

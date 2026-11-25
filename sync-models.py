@@ -411,7 +411,19 @@ def main():
                 dropped.append((cid, m))
 
         # 需要测试的：尚未暴露给 OpenCode 的模型（新候选 + 渠道里已有但未进白名单）
-        to_test = [m for m in (keep + new) if m not in whitelist][:12]
+        # 充值前（免费额度有限）设 SYNC_MAX_TEST=12 做保护；充值后 unset 或设大值不限制
+        to_test = [m for m in (keep + new) if m not in whitelist]
+        max_test = (env.get("SYNC_MAX_TEST") or os.environ.get("SYNC_MAX_TEST") or "").strip()
+        if max_test and max_test.isdigit():
+            to_test = to_test[:int(max_test)]
+        # 测试间隔：充值前默认 1s 保守（免费额度 + 10s 限流）；充值后（rate_limit 已解除）
+        # 可设 SYNC_TEST_SLEEP=0 不等待，加速同步
+        raw_sleep = (env.get("SYNC_TEST_SLEEP") or os.environ.get("SYNC_TEST_SLEEP") or "1").strip()
+        try:
+            test_sleep = float(raw_sleep)
+        except ValueError:
+            test_sleep = 1.0
+        test_sleep = max(0.0, test_sleep)
         tested = []
         for m in to_test:
             status, detail = test_upstream(cid, keys[cid], m, lines)
@@ -423,7 +435,8 @@ def main():
                 log(f"  + [{up['name']}] 可用 {m}{note}", lines)
             else:
                 log(f"  - [{up['name']}] 不可用 {m}: {status} {detail}", lines)
-            time.sleep(1)
+            if test_sleep:
+                time.sleep(test_sleep)
 
         # 已暴露在白名单里的模型默认保留；未通过测试的不加入
         planned[cid] = [m for m in (keep + new) if m in whitelist or m in tested]

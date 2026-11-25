@@ -39,7 +39,7 @@ flowchart LR
 | 渠道 | 申请地址 | Key 前缀 | 备注 |
 |---|---|---|---|
 | Numes | https://numes.ai → API keys | `sk-numes-v1-` | 9 个免费模型 |
-| OpenRouter | https://openrouter.ai/keys | `sk-or-v1-` | 100+ `:free` 模型 |
+| OpenRouter | https://openrouter.ai/keys | `sk-or-v1-` | 100+ `:free` 模型；充值后可用付费模型（400+，如 `qwen/qwen3.8-max-0902`）；页面已中文化，支持支付宝/微信充值 |
 | Groq | https://console.groq.com/keys | `gsk_` | 高速免费推理 |
 
 ---
@@ -200,6 +200,7 @@ flowchart TD
 | 上游 5xx | 上游临时故障 | 用 `verify.sh --watch` 类轮询确认恢复 |
 | `` `tool calling` is not supported with this model `` | 模型（如 Groq `allam-2-7b`）不支持工具调用，但 OpenCode 仍带 `tools` | 见下方「无工具模型」说明 |
 | `'messages.N' ... property 'reasoning_content' is unsupported` | 历史里的 `reasoning_content` 被回传给不认该字段的模型 | 见下方「无工具模型」说明 |
+| `provider_overloaded`（503，Groq） | Groq 上游容量瞬时耗尽（大上下文/高峰） | 网关已开自动重试缓解；仍偶发属正常，稍后重试即可 |
 
 ### 无工具 / 非推理模型（如 Groq `allam-2-7b`）
 
@@ -214,6 +215,27 @@ NO_TOOLS = {"allam-2-7b"}  # 请求体剥离 tools/tool_choice 与 assistant 历
 在 `sync-models.py` 的 `CAPABILITY_OVERRIDES` 里登记，避免 `sync-models` 把它改回 `true`。
 改动后 `systemctl --user restart groq-proxy.service`。
 
+### 网关自动重试（缓解上游瞬时 503）
+
+new-api 支持对可重试状态码自动重试，适合 Groq 偶发 `provider_overloaded`。
+在数据库 `options` 表（或用「系统设置」对应项）写入，改完重启容器：
+
+```sql
+INSERT INTO options(`key`,`value`) VALUES
+ ('RetryTimes','2'),
+ ('AutomaticRetryStatusCodes','429,500,502,503,504'),
+ ('AutomaticDisableChannelEnabled','false'),
+ ('MinRetryBackoff','1'),
+ ('MaxRetryBackoff','8')
+ON CONFLICT(`key`) DO UPDATE SET `value`=excluded.`value`;
+```
+
+- `RetryTimes`：单请求最大重试次数（`2`）。
+- `AutomaticRetryStatusCodes`：哪些状态码触发重试。
+- `AutomaticDisableChannelEnabled=false`：瞬时故障**不**自动禁用渠道，避免误伤。
+- `Min/MaxRetryBackoff`：退避秒数。
+
+> 重试只缓解瞬时抖动；若 Groq 长期 503，仍是上游容量问题，稍后再试或临时切换其他渠道。
 
 ### 安全与合规
 
@@ -222,6 +244,7 @@ NO_TOOLS = {"allam-2-7b"}  # 请求体剥离 tools/tool_choice 与 assistant 历
 - **端口**：默认只绑 `127.0.0.1`；开放局域网前务必确认信任边界，必要时用防火墙限制来源网段。
 - **License**：new-api 为 **AGPL-3.0**；个人自托管无碍，对外分发/提供服务注意 copyleft 义务。
 - **上游条款**：免费额度随时可能变更/下线，由使用者自行遵守上游政策。
+- **OpenRouter 充值**：充值后 `is_free_tier=false`，可访问付费模型（400+）。本项目仍控制在免费模型；页面已中文化，支持支付宝/微信充值。
 
 ---
 
@@ -281,7 +304,23 @@ systemctl --user list-timers sync-models.timer
 
 > 每次运行结果写入 `logs/sync-<时间>.log`，最新一份为 `logs/sync-latest.log`（日志已 gitignore）。
 > 修改数据库前会自动备份为 `one-api.db.sync-bak`。
-> 每次最多测试 12 个新模型，避免打爆 OpenRouter 免费额度（未充值时日限额 50 次）。
+
+**两套场景（充值前/后）由 `.env` 两个变量切换，互不牺牲：**
+
+| 变量 | 充值前（免费额度紧张） | 充值后（无限流） | 说明 |
+|---|---|---|---|
+| `SYNC_MAX_TEST` | `12` | 留空 | 每次最多测试的新模型数；留空=不限制 |
+| `SYNC_TEST_SLEEP` | `1` | `0` | 每个测试之间的等待秒数；默认 1 |
+
+```bash
+# 充值前：保守，避免打爆每日 50 次免费额度
+SYNC_MAX_TEST=12 SYNC_TEST_SLEEP=1 ./sync-models.py
+
+# 充值后：一次全测、不加等待
+SYNC_MAX_TEST= SYNC_TEST_SLEEP=0 ./sync-models.py
+```
+
+> 注意：即使充值后完全放开，上游偶发 429 时脚本仍按 `rate` 状态保留模型，不会误删。
 
 ---
 

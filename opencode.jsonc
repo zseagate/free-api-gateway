@@ -275,9 +275,9 @@
             "output": 4096
           }
         },
-        "dots-studio/dots-3-note-preview:free": {
-          "modelID": "dots-studio/dots-3-note-preview:free",
-          "name": "Dots 3 Note Preview (OpenRouter)",
+        "google/gemma-4-26b-a4b-it:free": {
+          "modelID": "google/gemma-4-26b-a4b-it:free",
+          "name": "Gemma 4 26b A4b It (OpenRouter)",
           "capabilities": {
             "tools": true,
             "input": [
@@ -292,9 +292,9 @@
             "output": 512
           }
         },
-        "google/gemma-4-26b-a4b-it:free": {
-          "modelID": "google/gemma-4-26b-a4b-it:free",
-          "name": "Gemma 4 26b A4b It (OpenRouter)",
+        "inclusionai/ling-3.2-flash:free": {
+          "modelID": "inclusionai/ling-3.2-flash:free",
+          "name": "Ling 3.2 Flash (OpenRouter)",
           "capabilities": {
             "tools": true,
             "input": [
@@ -392,6 +392,23 @@
           "limit": {
             "context": 131072,
             "output": 4096
+          }
+        },
+        "google/gemma-4-31b-it:free": {
+          "modelID": "google/gemma-4-31b-it:free",
+          "name": "Gemma 4 31b It (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
           }
         }
       }
