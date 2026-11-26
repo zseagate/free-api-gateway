@@ -4,6 +4,8 @@
 
 > ⚠️ **安全**：真实 API Key 存放在被 `.gitignore` 忽略的 `.env` 中，**绝不提交**。仓库只包含 `.env.example` 占位符。
 
+> 🚀 **推荐聚合方案**：优先使用 [free-api-gateway](https://github.com/zseagate/free-api-gateway)（自托管 new-api 网关，聚合 Numes/OpenRouter/Groq，客户端只用一把网关令牌），配置见 `opencode-gateway.jsonc`。下方直连方案保留作备选。
+
 ## 仓库结构
 
 ```
@@ -12,10 +14,11 @@ free-api-config/
 ├── .env                         # 真实配置(已 gitignore, 不提交)
 ├── .gitignore
 ├── api-check.sh                 # 连通性/可用性检测脚本
-├── opencode-numes.jsonc         # OpenCode provider 配置示例: Numes (OpenAI 兼容)
-├── opencode-fcc.jsonc           # OpenCode provider 配置示例: free-claude-code (本地反代)
-├── opencode-openrouter.jsonc    # OpenCode provider 配置示例: OpenRouter (免费模型)
-├── opencode-groq.jsonc          # OpenCode provider 配置示例: Groq (免费模型)
+├── opencode-gateway.jsonc       # OpenCode provider 配置示例: free-api-gateway 网关 (推荐, V2)
+├── opencode-numes.jsonc         # OpenCode provider 配置示例: Numes (OpenAI 兼容, V1)
+├── opencode-fcc.jsonc           # OpenCode provider 配置示例: free-claude-code (本地反代, V1)
+├── opencode-openrouter.jsonc    # OpenCode provider 配置示例: OpenRouter (免费模型, V1)
+├── opencode-groq.jsonc          # OpenCode provider 配置示例: Groq (免费模型, V1)
 └── README.md
 ```
 
@@ -57,6 +60,23 @@ source .env               # 加载环境变量
 ---
 
 ## 接入 OpenCode
+
+### 0. free-api-gateway (new-api 自托管网关) —— 推荐聚合方案
+
+把多个免费档（Numes / OpenRouter / Groq）聚合到统一 OpenAI 兼容端点，客户端只用一把网关令牌。详见上游 [free-api-gateway](https://github.com/zseagate/free-api-gateway) 的 `SETUP.md`，本地只含对接配置 `opencode-gateway.jsonc`：
+
+```bash
+# 1) 进入上游仓库目录后启动网关 (首次走 http://127.0.0.1:3000 设置向导建管理员)
+cd free-api-gateway && docker compose up -d
+# 2) 控制台添加三个渠道: Numes=Custom(8) / OpenRouter=OpenRouter(20) / Groq=OpenAI(1)
+# 3) 「令牌」页生成 sk-... 填入 .env 的 NEW_API_TOKEN
+# 4) (推荐) 启动 groq-proxy (见上游 SETUP.md §7); 不用代理则把 opencode-gateway.jsonc 的 baseURL 改为 127.0.0.1:3000/v1
+# 5) 把 opencode-gateway.jsonc 的 providers.gw 合并进 OpenCode 配置, 选 gw/<model-id>
+```
+
+> 注意：`opencode-gateway.jsonc` 默认 `baseURL` 是 `127.0.0.1:3001/v1`（groq-proxy，转发到 3000 并为 Groq 截断 prompt），**需先启动 groq-proxy**；不跑代理就改成 `127.0.0.1:3000/v1`。
+
+`.env` 需额外填 `OPENROUTER_API_KEY`、`GROQ_API_KEY`、`NEW_API_TOKEN`（模板见 `.env.example`）。完整排障（`tool calling is not supported`、`reasoning_content` 回传、Groq 429 等）见 `AGENTS.md`「free-api-gateway 规则」与上游 `SETUP.md` §9。
 
 ### 1. Numes (直连)
 

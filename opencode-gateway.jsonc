@@ -1,0 +1,446 @@
+// OpenCode 配置示例 — free-api-gateway (new-api 自托管网关) — 推荐聚合方案
+// 来源: https://github.com/zseagate/free-api-gateway  (V2 格式)
+// 把整个 providers.gw 段合并进 ~/.config/opencode/opencode.jsonc 的 "providers" 键
+// (或项目级 opencode.jsonc)。客户端只用一把网关令牌 NEW_API_TOKEN, 上游 Key 不落地。
+// 网关按请求的 model 字段路由到持有该模型的上游渠道 (Numes/OpenRouter/Groq)。
+// 前提: 本机跑 new-api (docker compose up -d), shell 里已导出 NEW_API_TOKEN。
+// 下方 baseURL 指向 groq-proxy (3001, 转发到 new-api 3000, 并为 Groq 截断 prompt)。
+//   - 用代理(推荐, Groq 需要): 保持 3001 并先启动 groq-proxy。
+//   - 不用代理: 把 baseURL 改成 http://127.0.0.1:3000/v1。
+// 在 /models 选 gw/<model-id>。
+// 注意: Numes 免费端点只支持 reasoningEffort=high, 下方 Numes 模型已统一设置。
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "gw/deepseek/deepseek-v4.1-flash:free",
+  "providers": {
+    "gw": {
+      "name": "Free Gateway (new-api)",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "http://127.0.0.1:3001/v1",
+        "apiKey": "{env:NEW_API_TOKEN}"
+      },
+      "models": {
+        "deepseek/deepseek-v4.1-flash:free": {
+          "modelID": "deepseek/deepseek-v4.1-flash:free",
+          "name": "DeepSeek V4.1 Flash (Numes free)",
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "nvidia/nemotron-3-ultra-550b-a55b:free": {
+          "modelID": "nvidia/nemotron-3-ultra-550b-a55b:free",
+          "name": "Nemotron 3 Ultra (Numes free)",
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "openrouter/auto": {
+          "modelID": "openrouter/auto",
+          "name": "OpenRouter Auto (free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "nvidia/nemotron-3.5-super-vl:free": {
+          "modelID": "nvidia/nemotron-3.5-super-vl:free",
+          "name": "Nemotron 3.5 Super VL (OpenRouter free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "nvidia/nemotron-3.5-lightning:free": {
+          "modelID": "nvidia/nemotron-3.5-lightning:free",
+          "name": "Nemotron 3.5 Lightning (OpenRouter free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
+          "modelID": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+          "name": "Nemotron 3 Nano Omni (OpenRouter free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "baidu/ernie-5.5-flash-preview:free": {
+          "modelID": "baidu/ernie-5.5-flash-preview:free",
+          "name": "ERNIE 5.5 Flash (OpenRouter free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "recursive/flint-v1.0:free": {
+          "modelID": "recursive/flint-v1.0:free",
+          "name": "Flint 1.0 (OpenRouter free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "qwen/qwen3.8-27b": {
+          "modelID": "qwen/qwen3.8-27b",
+          "name": "Qwen 3.8 27B (Groq free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 800
+          }
+        },
+        "openai/gpt-oss-120b": {
+          "modelID": "openai/gpt-oss-120b",
+          "name": "GPT-OSS 120B (Groq free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 800
+          }
+        },
+        "openai/gpt-oss-20b": {
+          "modelID": "openai/gpt-oss-20b",
+          "name": "GPT-OSS 20B (Groq free)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 800
+          }
+        },
+        "allam-2-7b": {
+          "modelID": "allam-2-7b",
+          "name": "ALLaM 2 7B (Groq free)",
+          "capabilities": {
+            "tools": false,
+            "reasoning": {
+              "supported": false
+            },
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 800
+          }
+        },
+        "dealignai/deepseek-v4.1-flash-uncensored-fp8:free": {
+          "modelID": "dealignai/deepseek-v4.1-flash-uncensored-fp8:free",
+          "name": "Deepseek v4.1 Flash Uncensored Fp8 (Numes)",
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "dealignai/glm-5.3-flash-uncensored-fp8:free": {
+          "modelID": "dealignai/glm-5.3-flash-uncensored-fp8:free",
+          "name": "Glm 5.3 Flash Uncensored Fp8 (Numes)",
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "dealignai/glm-5.3-uncensored-fp8:free": {
+          "modelID": "dealignai/glm-5.3-uncensored-fp8:free",
+          "name": "Glm 5.3 Uncensored Fp8 (Numes)",
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "google/gemma-4-26b-a4b-it:free": {
+          "modelID": "google/gemma-4-26b-a4b-it:free",
+          "name": "Gemma 4 26b A4b It (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "inclusionai/ling-3.2-flash:free": {
+          "modelID": "inclusionai/ling-3.2-flash:free",
+          "name": "Ling 3.2 Flash (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "liquid/lfm-3-1.7b:free": {
+          "modelID": "liquid/lfm-3-1.7b:free",
+          "name": "Lfm 3 1.7b (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "particle-ai/particle-1:free": {
+          "modelID": "particle-ai/particle-1:free",
+          "name": "Particle 1 (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        },
+        "z-ai/glm-5.3-flash:free": {
+          "modelID": "z-ai/glm-5.3-flash:free",
+          "name": "Glm 5.3 Flash (Numes)",
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "uniboshi/kimi-k3-abliterated-v1:free": {
+          "modelID": "uniboshi/kimi-k3-abliterated-v1:free",
+          "name": "Kimi K3 Abliterated v1 (Numes)",
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "z-ai/glm-5.3:free": {
+          "modelID": "z-ai/glm-5.3:free",
+          "name": "Glm 5.3 (Numes)",
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 4096
+          }
+        },
+        "google/gemma-4-31b-it:free": {
+          "modelID": "google/gemma-4-31b-it:free",
+          "name": "Gemma 4 31b It (OpenRouter)",
+          "capabilities": {
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "limit": {
+            "context": 131072,
+            "output": 512
+          }
+        }
+      }
+    }
+  }
+}
